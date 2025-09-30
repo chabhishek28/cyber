@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>A Celestial Celebration for Jyothi!</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Montserrat:wght@300;400;500&family=Creepster&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+
+    <style>
+        /* ✅ Theme Variables */
+        :root {
+            --bg-color-light: #f8f9f8; 
+            --text-color-light: #3a4a3a;
+            --primary-color-light: #4a6a4a;
+            --accent-color-light: #d0e0d0;
+            --highlight-color-light: #ffffff;
+            --box-shadow-light: 0 10px 25px rgba(0, 0, 0, 0.07);
+            --primary-color-neon: #00ff7f;
+            --heading-font: 'Cormorant Garamond', serif;
+            --body-font: 'Montserrat', sans-serif;
+            --dark-bg-color: #0d0d0d;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: var(--body-font); background-color: var(--bg-color-light); color: var(--text-color-light); }
+        body.modal-open { overflow: hidden; }
+
+        /* --- Intro & Prank Styles --- */
+        #preloader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 9999; display: flex; justify-content: center; align-items: center; transition: opacity 1.5s ease-out, visibility 1.5s; overflow: hidden; }
+        #preloader.hidden { opacity: 0; visibility: hidden; }
+        #hacker-terminal { font-family: 'Courier New', Courier, monospace; color: #00ff41; font-size: 1.5rem; width: 100%; max-width: 800px; padding: 0 20px; text-align: left; }
+        #hacker-terminal .line { white-space: nowrap; overflow: hidden; border-right: .15em solid #00ff41; }
+        @keyframes typing { from { width: 0 } to { width: 100% } }
+        @keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: #00ff41; } }
+        #hacked-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; color: #ff0000; font-family: 'Creepster', cursive; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 2rem; z-index: 10000; opacity: 0; transition: opacity 0.5s ease-in; text-shadow: 0 0 8px rgba(255, 0, 0, 0.8), 0 0 16px rgba(255, 0, 0, 0.8); animation: text-flicker 3s linear infinite; }
+        #hacked-overlay.visible { display: flex; opacity: 1; }
+        .hacked-icon { font-size: 10vw; animation: icon-glitch 1.5s linear infinite; margin-bottom: 1rem; }
+        .hacked-content h1 { font-size: 3rem; letter-spacing: 5px; }
+        .hacked-content p { font-family: 'Montserrat', sans-serif; font-size: 1rem; margin-top: 1rem; color: #f0f0f0; text-shadow: none; animation: none; }
+        #hacked-countdown { font-family: 'Courier New', Courier, monospace; font-size: 4rem; margin-top: 2rem; }
+        @keyframes text-flicker { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        @keyframes icon-glitch { 2%, 64% { transform: translate(2px, -2px); } 4%, 60% { transform: translate(-2px, 2px); } 62% { transform: translate(4px, -4px) skew(-12deg); } }
+        
+        .page-content { opacity: 0; transition: opacity 1.5s ease-in; position: relative; background-color: var(--bg-color-light); }
+        .page-content.visible { opacity: 1; }
+        
+        /* --- Homepage Styles --- */
+        .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; background: linear-gradient(320deg, #d4e7d4, #c0d0c0, #e6f0e6); background-size: 400% 400%; animation: gradient-flow 15s ease infinite; position: relative; color: var(--text-color-light); overflow: hidden; }
+        @keyframes gradient-flow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        #hero-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+        .hero-content { position: relative; z-index: 2; }
+        .hero-title { font-family: var(--heading-font); font-size: 5rem; background: linear-gradient(90deg, #4a6a4a, #8a9a8a, #4a6a4a); background-size: 200% 200%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: gradient-text-flow 5s ease infinite; }
+        @keyframes gradient-text-flow { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+        .hero-subtitle { font-size: 1.3rem; margin-top: 1rem; color: #5a6a5a; }
+        .hero .date { font-size: 1.5rem; font-weight: 400; color: var(--primary-color-light); margin-top: 0.5rem; margin-bottom: 2rem; }
+        .scroll-down { position: absolute; bottom: 2rem; left: 50%; z-index: 2; color: var(--primary-color-light); font-size: 2.5rem; animation: pulse-light 2s infinite; text-decoration: none; }
+        @keyframes pulse-light { 0%, 100% { transform: scale(1) translateX(-50%); opacity: 0.7; } 50% { transform: scale(1.1) translateX(-50%); opacity: 1; } }
+
+        /* --- Content Sections --- */
+        .section { padding: 5rem 2rem; max-width: 1200px; margin: 0 auto; text-align: center; position: relative; }
+        .section-title { font-family: var(--heading-font); font-size: 3.5rem; color: var(--primary-color-light); margin-bottom: 3rem; }
+        .personality-card { background-color: var(--highlight-color-light); padding: 2.5rem; border-radius: 10px; border: 1px solid #e0e0e0; box-shadow: var(--box-shadow-light); margin-bottom: 1.5rem; text-align: left; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .personality-card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(74, 106, 74, 0.15); }
+        .personality-card h3 { display: flex; align-items: center; font-family: var(--heading-font); font-size: 1.8rem; color: var(--primary-color-light); margin-bottom: 0.5rem; }
+        .card-icon { color: var(--accent-color-light); margin-right: 1rem; font-size: 1.5em; }
+        
+        #gallery { background-color: #eaf0ea; }
+        .photo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+        .photo-card { background-color: var(--highlight-color-light); box-shadow: var(--box-shadow-light); border-radius: 10px; overflow: hidden; transition: transform 0.4s ease, box-shadow 0.4s ease; border: 3px solid transparent; aspect-ratio: 1 / 1; position: relative; }
+        .photo-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(74, 106, 74, 0.2); border-color: var(--accent-color-light); }
+        .photo-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .photo-card .caption { position: absolute; bottom: 0; left: 0; width: 100%; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(5px); padding: 0.75rem 1rem; font-weight: 600; color: #333; text-align: center; opacity: 0; transform: translateY(100%); transition: opacity 0.3s ease, transform 0.3s ease; }
+        .photo-card:hover .caption { opacity: 1; transform: translateY(0); }
+
+        /* --- Finale Overlay --- */
+        #name-celebration-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 998; opacity: 0; transition: opacity 1s ease-in-out; pointer-events: none; overflow: hidden; background: #000; }
+        #name-celebration-overlay.active { opacity: 1; pointer-events: auto; }
+        #name-canvas { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 999; }
+        #wish-text { position: absolute; top: 68%; left: 50%; transform: translateX(-50%); color: #e0e0e0; font-family: var(--body-font); font-size: 1.5rem; text-align: center; opacity: 0; transition: opacity 2s ease-in; z-index: 1000; width: 90%; }
+        #wish-text.visible { opacity: 1; }
+        .cracker-button { font-size: 1.2rem; font-weight: 600; cursor: pointer; padding: 1.2rem 3rem; border-radius: 50px; border: none; background: var(--primary-color-light); color: #fff; box-shadow: var(--box-shadow-light); transition: all 0.3s ease; animation: pulse-button 2.5s infinite; }
+        @keyframes pulse-button { 0%, 100% { box-shadow: 0 0 0 0 rgba(74, 106, 74, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(74, 106, 74, 0); } }
+        .cracker-button:hover { transform: translateY(-5px) scale(1.05); background-color: #3a5a3a; animation-play-state: paused; }
+        
+        /* --- ✅ BUTTERFLY EFFECT STYLES --- */
+        .butterfly-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 998; pointer-events: none; opacity: 0; transition: opacity 2s ease-in; }
+        .butterfly-container.active { opacity: 1; }
+        .butterfly-orbit { position: absolute; top: 50%; left: 50%; width: 1px; height: 1px; animation: orbit var(--d) linear infinite; }
+        @keyframes orbit { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .butterfly { position: absolute; top: 0; left: 0; width: 50px; height: 40px; transform-style: preserve-3d; transform: translateX(var(--r)) rotateY(90deg); }
+        .wing { position: absolute; top: 0; left: 50%; width: 50%; height: 100%; transform-origin: 100% 50%; }
+        .wing.right { left: auto; right: 50%; transform-origin: 0% 50%; }
+        .wing-part { position: absolute; width: 100%; height: 100%; background: radial-gradient(ellipse at center, var(--c1) 5%, transparent 60%); border-radius: 80% 20% 80% 20%; box-shadow: 0 0 15px var(--c1), inset 0 0 5px var(--c1); }
+        .wing.left { animation: flap-left 0.3s ease-in-out infinite; }
+        .wing.right { animation: flap-right 0.3s ease-in-out infinite; }
+        @keyframes flap-left { 0%, 100% { transform: rotateY(-30deg); } 50% { transform: rotateY(-80deg); } }
+        @keyframes flap-right { 0%, 100% { transform: rotateY(30deg); } 50% { transform: rotateY(80deg); } }
+
+        /* --- Secret Modal --- */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 1000; justify-content: center; align-items: center; padding: 1rem; }
+        .secret-modal { background: #1f1f1f; color: #f0f0f0; padding: 3rem; border-radius: 15px; max-width: 600px; text-align: center; position: relative; border: 2px solid var(--primary-color-neon); box-shadow: 0 0 30px rgba(0, 255, 127, 0.5); }
+        .secret-modal h2 { color: var(--primary-color-neon); }
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 2rem; color: #fff; cursor: pointer; transition: transform 0.2s ease; }
+        
+        footer { padding: 4rem 2rem; text-align: center; background: #eaf0ea; color: var(--text-color-light); }
+
+        /* --- DARK THEME Creator "About Page" Styles --- */
+        .creator-trigger-section { padding-top: 3rem; padding-bottom: 5rem; text-align: center; }
+        #creator-trigger-link { font-family: var(--body-font); font-size: 1.2rem; font-weight: 500; color: var(--text-color-light); cursor: pointer; text-decoration: none; border-bottom: 2px solid var(--accent-color-light); padding-bottom: 5px; transition: color 0.3s ease, border-color 0.3s ease; }
+        #creator-trigger-link:hover { color: var(--primary-color-light); border-color: var(--primary-color-light); }
+        
+        #creator-page-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: var(--dark-bg-color);
+            z-index: 1001;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 5%;
+            opacity: 0;
+            transform: translateY(100%);
+            transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.6s ease;
+            pointer-events: none;
+            overflow-y: auto;
+        }
+        #creator-page-overlay.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+        #creator-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1002; }
+        .creator-page-content {
+            position: relative;
+            z-index: 1003;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 4rem;
+            align-items: center;
+            max-width: 1100px;
+            width: 100%;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease 0.5s, transform 0.6s ease 0.5s;
+        }
+        #creator-page-overlay.visible .creator-page-content { opacity: 1; transform: translateY(0); }
+        .creator-photo-frame {
+            width: 100%;
+            aspect-ratio: 4 / 5;
+            padding: 10px;
+            border: 2px solid var(--primary-color-neon);
+            box-shadow: 0 0 20px rgba(0, 255, 127, 0.3);
+            border-radius: 10px;
+        }
+        .creator-photo-frame img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 5px; }
+        .creator-text-content { text-align: left; }
+        .creator-text-content h2 {
+            font-family: var(--heading-font);
+            font-size: 3.5rem;
+            color: var(--primary-color-neon);
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(0, 255, 127, 0.5);
+        }
+        .creator-text-content p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #f0f0f0;
+        }
+        #creator-page-overlay .close-modal { position: absolute; top: 30px; right: 40px; color: #fff; font-size: 3rem; cursor: pointer; transition: transform 0.3s ease; z-index: 1004; }
+        #creator-page-overlay .close-modal:hover { transform: scale(1.1) rotate(90deg); }
+
+        /* --- MOBILE RESPONSIVENESS --- */
+        @media screen and (max-width: 900px) {
+            .creator-page-content { grid-template-columns: 1fr; gap: 2.5rem; text-align: center; padding-top: 3rem; }
+            .creator-photo-frame { max-width: 400px; margin: 0 auto; }
+            .creator-text-content { text-align: center; }
+            .creator-text-content h2 { font-size: 3rem; }
+        }
+        @media screen and (max-width: 768px) {
+            .hero-title { font-size: 3.5rem; } .hero-subtitle { font-size: 1.1rem; } .section-title { font-size: 2.5rem; } .section { padding: 3rem 1.5rem; } #hacker-terminal { font-size: 1rem; } .hacked-content h1 { font-size: 2rem; } .hacked-content p { font-size: 0.9rem; } #hacked-countdown { font-size: 3rem; } #wish-text { font-size: 1.2rem; } .secret-modal { padding: 2.5rem 1.5rem; } .secret-modal h2 { font-size: 2rem; } .photo-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+            #creator-page-overlay { padding: 2rem; }
+            #creator-page-overlay .close-modal { top: 20px; right: 20px; font-size: 3.5rem; }
+        }
+        @media screen and (max-width: 480px) {
+            .hero-title { font-size: 2.8rem; } .section-title { font-size: 2.2rem; } .personality-card h3 { font-size: 1.5rem; } .cracker-button { padding: 1rem 2.5rem; font-size: 1.1rem; }
+            .creator-text-content h2 { font-size: 2.5rem; margin-bottom: 1rem; }
+            .creator-text-content p { font-size: 1rem; line-height: 1.7; }
+            .creator-photo-frame { padding: 10px; }
+            .butterfly { transform: translateX(var(--r)) rotateY(90deg) scale(0.8); }
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="preloader">
+        <div id="hacker-terminal"></div>
+    </div>
+
+    <div id="hacked-overlay">
+        <div class="hacked-content">
+            <div class="hacked-icon">☠️</div>
+            <h1>SYSTEM HACKED</h1>
+            <p>Don't worry, we're just hijacking this device for getting information...</p>
+            <p>Initiating hacking protocol in...</p>
+            <div id="hacked-countdown">5</div>
+        </div>
+    </div>
+
+    <div class="page-content">
+        <div id="name-celebration-overlay">
+             <!-- ✅ BUTTERFLY CONTAINER ADDED BACK -->
+            <div class="butterfly-container">
+                <div class="butterfly-orbit" style="--d: 8s;"><div class="butterfly" style="--r: 150px; --c1: #00ff7f;"> <div class="wing left"><div class="wing-part"></div></div> <div class="wing right"><div class="wing-part"></div></div> </div></div>
+                <div class="butterfly-orbit" style="--d: 10s;"><div class="butterfly" style="--r: 250px; --c1: #98fb98;"> <div class="wing left"><div class="wing-part"></div></div> <div class="wing right"><div class="wing-part"></div></div> </div></div>
+                <div class="butterfly-orbit" style="--d: 12s;"><div class="butterfly" style="--r: 350px; --c1: #32cd32;"> <div class="wing left"><div class="wing-part"></div></div> <div class="wing right"><div class="wing-part"></div></div> </div></div>
+            </div>
+            <canvas id="name-canvas"></canvas>
+            <div id="wish-text"></div>
+        </div>
+
+        <header class="hero">
+            <canvas id="hero-canvas"></canvas>
+            <div class="hero-content">
+                <h1 class="hero-title" data-aos="zoom-in">Happy Birthday, Jyothi!</h1> <br>
+                <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="200">On this special day, may your life be filled with love, laughter, and endless blessings. <br>You deserve nothing but the best, today and always. 🌟</p>
+                <p class="date" data-aos="fade-up" data-aos-delay="300">September 28th</p>
+            </div>
+            <a href="#celebration-section" class="scroll-down">↓</a>
+        </header>
+
+        <main>
+            <section id="celebration-section" class="section">
+                <h2 class="section-title" data-aos="fade-up">A Celebration of You</h2>
+                <div class="personality-card" data-aos="fade-right">
+                    <h3><span class="card-icon">✨</span>Your Incredible Strength</h3>
+                    <p>You have an amazing strength to face any challenge with courage. Your determination and positivity lift everyone around you. You make hard things look easy with your confidence and energy.</p>
+                </div>
+                <div class="personality-card" data-aos="fade-left">
+                    <h3><span class="card-icon">❤️</span>Your Loving Heart 
+                        <span id="secretTrigger" class="secret-trigger" title="A little secret...">♥</span>
+                    </h3>
+                    <p>You are caring and loving, always thinking of others. Your warmth and kindness make everyone feel special. You value relationships and give your heart sincerely.</p>
+                </div>
+            </section>
+
+            <section id="gallery" class="section">
+                <h2 class="section-title" data-aos="fade-up">A Gallery of Your Moments</h2>
+                <div class="photo-grid">
+                    <div class="photo-card" data-aos="zoom-in" data-aos-delay="100">
+                        <img src="images/pic1.jpg" alt="A cherished first memory with Jyothi">
+                        <p class="caption">  You will find happiness with people who truly value your caring nature</p>
+                    </div>
+                    <div class="photo-card" data-aos="zoom-in" data-aos-delay="200">
+                        <img src="images/pic2.jpg" alt="An unforgettable adventure with Jyothi">
+                        <p class="caption">Your smile spreads happiness and brightens up the room.</p>
+                    </div>
+                    <div class="photo-card" data-aos="zoom-in" data-aos-delay="300">
+                        <img src="images/pic3.jpg" alt="Jyothi shining bright during a celebration">
+                        <p class="caption">I’ve always loved your kind heart and your playful, childish behavior back in our 10th class</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2 class="section-title" data-aos="fade-up">Your Suprise!</h2>
+                <p data-aos="fade-up" data-aos-delay="100" style="max-width: 600px; margin: 0 auto 2rem auto;">Because a star like you deserve more special right</p>
+                <button id="crackerButton" class="cracker-button" data-aos="zoom-in" data-aos-delay="200">Click here b'day girl</button>
+            </section>
+            
+            <section class="creator-trigger-section">
+                 <a id="creator-trigger-link" href="#" data-aos="fade-up">A  message from Admin</a>
+            </section>
+
+        </main>
+
+        <footer><p>With love, [Your Name] ❤</p></footer>
+        
+        <div id="creator-page-overlay">
+            <canvas id="creator-canvas"></canvas>
+            <span id="close-creator-page" class="close-modal">&times;</span>
+            <div class="creator-page-content">
+                <div class="creator-photo-frame">
+                    <img src="images/profile.jpg" alt="A photo of the creator">
+                </div>
+                <div class="creator-text-content">
+                    <h2>From Abhi</h2>
+                    <p>Happy Birthday, Jyothi! Creating this little world for you has been so much fun. I hope it brings a huge smile to your face. You are an incredible person, and I'm so lucky to have a friend like you in my life. Wishing you all the best today and always!</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-overlay" class="modal-overlay">
+            <div id="secret-modal" class="secret-modal">
+                <span id="close-modal" class="close-modal">&times;</span>
+                <h2>Your Special Day</h2>
+                <p style="font-size: 1.5rem; font-weight: 600; color: var(--primary-color-neon); margin-bottom: 1rem;">June 30th</p>
+                <p style="font-size: 1.1rem;">While today is all about celebrating you, I wanted to save a small, secret moment for yours. This day will always be incredibly special for you. It's a day that reminds you of love, connection, and the wonderful journey you guys going on. Thinking of you today, and always.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
+    <script>
+        // --- HACKED INTRO & PRANK LOGIC (Unchanged) ---
+        window.addEventListener('load', () => {
+            const preloader = document.getElementById('preloader');
+            const terminal = document.getElementById('hacker-terminal');
+            const mainContent = document.querySelector('.page-content');
+            const hackedOverlay = document.getElementById('hacked-overlay');
+            const countdownElement = document.getElementById('hacked-countdown');
+            const hackerMessages = [ "Initiating connection...", "Bypassing firewall Security...", "WARNING: System security weakness!", "Target identified: Jyothi Mobile.." ];
+            let messageIndex = 0;
+            function typeHackerLine() {
+                if (messageIndex < hackerMessages.length) {
+                    const lineText = hackerMessages[messageIndex];
+                    const p = document.createElement('p');
+                    p.className = 'line';
+                    p.textContent = lineText;
+                    const typingDuration = lineText.length * 90;
+                    p.style.animation = `typing ${typingDuration}ms steps(${lineText.length}, end), blink-caret .75s step-end infinite`;
+                    terminal.innerHTML = ''; 
+                    terminal.appendChild(p);
+                    messageIndex++;
+                    setTimeout(typeHackerLine, typingDuration + 1200);
+                } else {
+                    setTimeout(() => {
+                        preloader.style.opacity = 0;
+                        hackedOverlay.classList.add('visible');
+                        let countdown = 5;
+                        countdownElement.textContent = countdown;
+                        const interval = setInterval(() => {
+                            countdown--;
+                            countdownElement.textContent = countdown;
+                            if (countdown <= 0) {
+                                clearInterval(interval);
+                                hackedOverlay.style.opacity = 0;
+                                preloader.classList.add('hidden');
+                                mainContent.classList.add('visible');
+                                setTimeout(() => {
+                                    preloader.style.display = 'none';
+                                    hackedOverlay.style.display = 'none';
+                                }, 1500);
+                            }
+                        }, 1000);
+                    }, 1000);
+                }
+            }
+            setTimeout(typeHackerLine, 500);
+        });
+
+        AOS.init({ duration: 800, once: true, offset: 50 });
+
+        // --- REUSABLE Bubble Animation Logic ---
+        function setupBubbleAnimation(canvasId, bubbleColor) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            let bubbles = [];
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+            class Bubble {
+                constructor() { this.x = Math.random() * canvas.width; this.y = canvas.height + 50; this.radius = Math.random() * 15 + 5; this.speedY = Math.random() * 3 + 1; this.color = bubbleColor; }
+                update() { this.y -= this.speedY; }
+                draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = this.color; ctx.fill(); }
+            }
+            function handleBubbles() {
+                if (bubbles.length < 40) bubbles.push(new Bubble());
+                for (let i = 0; i < bubbles.length; i++) { bubbles[i].update(); bubbles[i].draw(); if (bubbles[i].y < -50) { bubbles.splice(i, 1); i--; } }
+            }
+            function animate() { ctx.clearRect(0, 0, canvas.width, canvas.height); handleBubbles(); requestAnimationFrame(animate); }
+            animate();
+        }
+        
+        setupBubbleAnimation('hero-canvas', 'rgba(74, 106, 74, 0.2)');
+        setupBubbleAnimation('creator-canvas', 'rgba(255, 255, 255, 0.15)');
+
+        // --- ✅ FULL NAME ANIMATION LOGIC (WITH BUTTERFLIES) ---
+        const crackerButton = document.getElementById('crackerButton');
+        const nameOverlay = document.getElementById('name-celebration-overlay');
+        const canvas = document.getElementById('name-canvas');
+        const ctx = canvas.getContext('2d');
+        const wishText = document.getElementById('wish-text');
+        
+        const namePoints = {
+            'J': [{x: 50, y: 30}, {x: 110, y: 30}, {x: 80, y: 30}, {x: 80, y: 90}, {x: 60, y: 90}, {x: 40, y: 80}],
+            'Y': [{x: 130, y: 30}, {x: 160, y: 60}, {x: 190, y: 30}, {x: 160, y: 60}, {x: 160, y: 90}],
+            'O': [{x: 240, y: 30}, {x: 220, y: 60}, {x: 240, y: 90}, {x: 260, y: 60}, {x: 240, y: 30}],
+            'T': [{x: 290, y: 30}, {x: 350, y: 30}, {x: 320, y: 30}, {x: 320, y: 90}],
+            'H': [{x: 370, y: 30}, {x: 370, y: 90}, {x: 370, y: 60}, {x: 410, y: 60}, {x: 410, y: 30}, {x: 410, y: 90}],
+            'I': [{x: 440, y: 30}, {x: 480, y: 30}, {x: 460, y: 30}, {x: 460, y: 90}, {x: 440, y: 90}, {x: 480, y: 90}]
+        };
+
+        // Function to start the butterfly animation
+        function startButterflyAnimation() {
+            document.querySelector('.butterfly-container')?.classList.add('active');
+        }
+
+        function drawNameAnimation() {
+           canvas.width = 600; canvas.height = 120; ctx.clearRect(0, 0, canvas.width, canvas.height);
+            wishText.innerText = "Happy Birthday, Jyothi!"; wishText.classList.add('visible');
+            let currentSegment = 0; let progress = 0; const animationSpeed = 0.05; const segments = [];
+            for (const letter in namePoints) { for (let i = 0; i < namePoints[letter].length - 1; i++) { segments.push({ start: namePoints[letter][i], end: namePoints[letter][i+1] }); } }
+            function animate() {
+                if (currentSegment >= segments.length) {
+                    wishText.innerText = "! I’ve always loved your kind heart and your playful, childish ways since our 10th class. You’re smart, brave, and full of positivity, and your funny, playful side always makes everyone smile. Wishing you a day as radiant as your smile.";
+                    wishText.classList.add('visible');
+                    // Call butterflies and then confetti
+                    startButterflyAnimation();
+                    setTimeout(triggerNeonCrackers, 2500); 
+                    return;
+                }
+                const seg = segments[currentSegment]; const newX = seg.start.x + (seg.end.x - seg.start.x) * progress; const newY = seg.start.y + (seg.end.y - seg.start.y) * progress;
+                ctx.beginPath(); ctx.moveTo(seg.start.x, seg.start.y); ctx.lineTo(newX, newY); ctx.strokeStyle = '#00ff7f'; ctx.lineWidth = 3; ctx.shadowColor = '#00ff7f'; ctx.shadowBlur = 15; ctx.stroke();
+                progress += animationSpeed; if (progress >= 1) { progress = 0; currentSegment++; }
+                requestAnimationFrame(animate);
+            }
+            setTimeout(animate, 500);
+        }
+
+        function triggerNeonCrackers() {
+            const duration = 4 * 1000; const animationEnd = Date.now() + duration; const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 1001 }; const neonColors = ['#00ff7f', '#ffffff'];
+            function randomInRange(min, max) { return Math.random() * (max - min) + min; }
+            const interval = setInterval(function() {
+                const timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    setTimeout(() => { 
+                        nameOverlay.classList.remove('active'); 
+                        wishText.classList.remove('visible');
+                        document.querySelector('.butterfly-container')?.classList.remove('active');
+                    }, 3000);
+                    return;
+                }
+                const particleCount = 50 * (timeLeft / duration);
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }, colors: neonColors }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }, colors: neonColors }));
+            }, 250);
+        }
+
+        crackerButton.addEventListener('click', () => { nameOverlay.classList.add('active'); setTimeout(drawNameAnimation, 1000); });
+
+        // --- Secret Modal Logic ---
+        const secretTrigger = document.getElementById('secretTrigger');
+        const modalOverlay = document.getElementById('modal-overlay');
+        const closeModalBtn = document.getElementById('close-modal');
+        function openSecretModal() { modalOverlay.style.display = 'flex'; document.body.classList.add('modal-open'); setTimeout(() => { modalOverlay.style.opacity = '1'; }, 10); }
+        function closeSecretModal() { modalOverlay.style.opacity = '0'; setTimeout(() => { modalOverlay.style.display = 'none'; document.body.classList.remove('modal-open'); }, 300); }
+        secretTrigger.addEventListener('click', openSecretModal);
+        closeModalBtn.addEventListener('click', closeSecretModal);
+        modalOverlay.addEventListener('click', (event) => { if (event.target === modalOverlay) { closeSecretModal(); } });
+
+        // --- Professional "About Page" Logic ---
+        const creatorTriggerLink = document.getElementById('creator-trigger-link');
+        const creatorPageOverlay = document.getElementById('creator-page-overlay');
+        const closeCreatorBtn = document.getElementById('close-creator-page');
+        const closeCreatorPage = () => { creatorPageOverlay.classList.remove('visible'); document.body.classList.remove('modal-open'); };
+        creatorTriggerLink.addEventListener('click', (e) => { e.preventDefault(); creatorPageOverlay.classList.add('visible'); document.body.classList.add('modal-open'); });
+        closeCreatorBtn.addEventListener('click', closeCreatorPage);
+        creatorPageOverlay.addEventListener('click', (event) => { if (event.target === creatorPageOverlay) { closeCreatorPage(); } });
+    </script>
+</body>
+</html>
