@@ -15,68 +15,849 @@
     <style>
         /* ✅ Theme Variables */
         :root {
-            --bg-color-light: #f8f9f8; 
-            --text-color-light: #3a4a3a;
-            --primary-color-light: #4a6a4a;
-            --accent-color-light: #d0e0d0;
+            --bg-color-light: #060d08;
+            --text-color-light: #e8f9ee;
+            --primary-color-light: #78ffb1;
+            --accent-color-light: #123b2f;
             --highlight-color-light: #ffffff;
-            --box-shadow-light: 0 10px 25px rgba(0, 0, 0, 0.07);
+            --box-shadow-light: 0 10px 25px rgba(0, 255, 140, 0.12);
             --primary-color-neon: #00ff7f;
             --heading-font: 'Cormorant Garamond', serif;
             --body-font: 'Montserrat', sans-serif;
-            --dark-bg-color: #0d0d0d;
+            --dark-bg-color: #050b08;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
-        body { font-family: var(--body-font); background-color: var(--bg-color-light); color: var(--text-color-light); }
+        body { font-family: var(--body-font); background: radial-gradient(circle at top, rgba(26, 255, 164, 0.14), transparent 35%), #050b08; color: var(--text-color-light); }
         body.modal-open { overflow: hidden; }
 
-        /* --- Intro & Prank Styles --- */
-        #preloader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 9999; display: flex; justify-content: center; align-items: center; transition: opacity 1.5s ease-out, visibility 1.5s; overflow: hidden; }
-        #preloader.hidden { opacity: 0; visibility: hidden; }
-        #hacker-terminal { font-family: 'Courier New', Courier, monospace; color: #00ff41; font-size: 1.5rem; width: 100%; max-width: 800px; padding: 0 20px; text-align: left; }
-        #hacker-terminal .line { white-space: nowrap; overflow: hidden; border-right: .15em solid #00ff41; }
-        @keyframes typing { from { width: 0 } to { width: 100% } }
-        @keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: #00ff41; } }
-        #hacked-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; color: #ff0000; font-family: 'Creepster', cursive; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 2rem; z-index: 10000; opacity: 0; transition: opacity 0.5s ease-in; text-shadow: 0 0 8px rgba(255, 0, 0, 0.8), 0 0 16px rgba(255, 0, 0, 0.8); animation: text-flicker 3s linear infinite; }
-        #hacked-overlay.visible { display: flex; opacity: 1; }
-        .hacked-icon { font-size: 10vw; animation: icon-glitch 1.5s linear infinite; margin-bottom: 1rem; }
-        .hacked-content h1 { font-size: 3rem; letter-spacing: 5px; }
-        .hacked-content p { font-family: 'Montserrat', sans-serif; font-size: 1rem; margin-top: 1rem; color: #f0f0f0; text-shadow: none; animation: none; }
-        #hacked-countdown { font-family: 'Courier New', Courier, monospace; font-size: 4rem; margin-top: 2rem; }
-        @keyframes text-flicker { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
-        @keyframes icon-glitch { 2%, 64% { transform: translate(2px, -2px); } 4%, 60% { transform: translate(-2px, 2px); } 62% { transform: translate(4px, -4px) skew(-12deg); } }
+        /* --- Intro & Opening Card Styles --- */
+        .intro-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at top, rgba(0,255,127,0.18), rgba(3,12,8,0.96) 38%, rgba(3,9,7,1) 100%);
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+            overflow: hidden;
+        }
+        .intro-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .intro-scene {
+            position: relative;
+            width: min(92vw, 780px);
+            height: min(74vh, 500px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .whatsapp-card {
+            width: min(92vw, 430px);
+            background: linear-gradient(180deg, rgba(18, 28, 23, 0.98) 0%, rgba(11, 16, 14, 0.98) 100%);
+            border-radius: 24px;
+            box-shadow: 0 24px 60px rgba(0, 255, 127, 0.1);
+            overflow: hidden;
+            border: 1px solid rgba(120, 255, 176, 0.22);
+        }
+        .whatsapp-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 18px;
+            background: linear-gradient(180deg, #1d8f6d 0%, #1d7f64 100%);
+            color: white;
+            font-weight: 600;
+        }
+        .whatsapp-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: grid;
+            place-items: center;
+            font-size: 1.1rem;
+            border: 1px solid rgba(255,255,255,0.25);
+        }
+        .chat-area {
+            padding: 16px 14px 12px;
+            min-height: 300px;
+            background:
+                linear-gradient(rgba(255,255,255,0.15), rgba(255,255,255,0.15)),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><rect width="60" height="60" fill="transparent"/><path d="M0 20h60M0 40h60M20 0v60M40 0v60" stroke="rgba(29,143,109,0.04)" stroke-width="1"/></svg>');
+        }
+        .chat-message {
+            display: flex;
+            margin-bottom: 12px;
+            opacity: 0;
+            transform: translateY(12px);
+            animation: chatMessageIn 0.35s ease forwards;
+        }
+        .chat-message.me { justify-content: flex-end; }
+        .chat-message.her { justify-content: flex-start; }
+        .chat-bubble {
+            max-width: 72%;
+            padding: 10px 14px;
+            border-radius: 16px;
+            line-height: 1.5;
+            font-size: 0.96rem;
+            box-shadow: 0 5px 12px rgba(0,0,0,0.04);
+        }
+        .chat-message.me .chat-bubble {
+            background: #dbf8c6;
+            color: #1f1f1f;
+            border-radius: 16px 16px 4px 16px;
+        }
+        .chat-message.her .chat-bubble {
+            background: #ffffff;
+            color: #1f1f1f;
+            border-radius: 16px 16px 16px 4px;
+        }
+        @keyframes chatMessageIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .typing-row {
+            display: none;
+            justify-content: flex-start;
+            margin: 0 0 12px;
+        }
+        .typing-row.visible {
+            display: flex;
+        }
+        .typing-bubble {
+            background: #ffffff;
+            border-radius: 16px 16px 16px 4px;
+            padding: 10px 12px;
+            box-shadow: 0 5px 12px rgba(0,0,0,0.04);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .typing-bubble span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: block;
+            background: #9aa5ad;
+            animation: typingPulse 1s infinite ease-in-out;
+        }
+        .typing-bubble span:nth-child(2) { animation-delay: 0.15s; }
+        .typing-bubble span:nth-child(3) { animation-delay: 0.3s; }
+        @keyframes typingPulse {
+            0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+        .walking-boy {
+            position: absolute;
+            left: 50%;
+            bottom: 10px;
+            width: 320px;
+            height: 320px;
+            transform: translateX(-50%);
+            animation: walk-in 2.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            z-index: 2;
+            filter: drop-shadow(0 22px 28px rgba(70, 63, 72, 0.18));
+        }
+        @keyframes walk-in {
+            0% { transform: translateX(-60%) translateY(22px) scale(0.72); opacity: 0; }
+            25% { opacity: 1; }
+            70% { transform: translateX(-46%) translateY(0) scale(0.9); }
+            100% { transform: translateX(-50%) translateY(0) scale(1); opacity: 1; }
+        }
+        .robot-dog-head {
+            position: absolute;
+            left: 88px;
+            top: 0;
+            width: 150px;
+            height: 120px;
+            background: linear-gradient(135deg, #dfe6ed 0%, #b7c3cf 100%);
+            border: 6px solid #5a6570;
+            border-radius: 34px 34px 30px 30px;
+            z-index: 3;
+            box-shadow: inset -12px -12px 0 rgba(255,255,255,0.18);
+        }
+        .robot-dog-ear {
+            position: absolute;
+            width: 26px;
+            height: 34px;
+            background: linear-gradient(180deg, #a7b8c7, #8192a0);
+            border: 5px solid #5a6570;
+            border-radius: 12px 12px 8px 8px;
+            top: -20px;
+        }
+        .robot-dog-ear.left { left: 92px; }
+        .robot-dog-ear.right { left: 204px; }
+        .robot-dog-eye {
+            position: absolute;
+            top: 36px;
+            width: 18px;
+            height: 18px;
+            background: #1e1f22;
+            border-radius: 50%;
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.45);
+            z-index: 5;
+        }
+        .robot-dog-eye.left { left: 120px; }
+        .robot-dog-eye.right { left: 178px; }
+        .robot-dog-nose {
+            position: absolute;
+            left: 154px;
+            top: 62px;
+            width: 18px;
+            height: 18px;
+            background: #d84a5d;
+            border: 3px solid #b63b4b;
+            border-radius: 50%;
+            z-index: 6;
+        }
+        .robot-dog-mouth {
+            position: absolute;
+            left: 110px;
+            top: 84px;
+            width: 90px;
+            height: 36px;
+            border-bottom: 5px solid #31373d;
+            border-radius: 0 0 60px 60px;
+            z-index: 5;
+        }
+        .robot-dog-body {
+            position: absolute;
+            left: 70px;
+            top: 118px;
+            width: 180px;
+            height: 122px;
+            background: linear-gradient(135deg, #dfe5eb 0%, #b5c2d0 100%);
+            border: 6px solid #5a6570;
+            border-radius: 28px 28px 26px 26px;
+            z-index: 1;
+        }
+        .robot-dog-belly {
+            position: absolute;
+            left: 108px;
+            top: 146px;
+            width: 104px;
+            height: 60px;
+            background: #f9fbff;
+            border: 6px solid #5a6570;
+            border-radius: 18px;
+            z-index: 2;
+        }
+        .robot-dog-belly::before {
+            content: "";
+            position: absolute;
+            left: 36px;
+            top: 18px;
+            width: 14px;
+            height: 14px;
+            background: #ffb9b9;
+            border-radius: 50%;
+        }
+        .robot-dog-chest-light {
+            position: absolute;
+            left: 160px;
+            top: 160px;
+            width: 12px;
+            height: 12px;
+            background: #f5d76d;
+            border-radius: 50%;
+            border: 3px solid #b88b00;
+            z-index: 3;
+        }
+        .robot-dog-arm {
+            position: absolute;
+            width: 20px;
+            height: 78px;
+            background: linear-gradient(180deg, #c5d3df, #90a5b9);
+            border: 5px solid #5a6570;
+            border-radius: 18px;
+            z-index: 0;
+        }
+        .robot-dog-arm.left { left: 40px; top: 122px; transform: rotate(20deg); }
+        .robot-dog-arm.right { left: 252px; top: 122px; transform: rotate(-20deg); }
+        .robot-dog-paw {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #d7e1eb;
+            border: 5px solid #5a6570;
+            border-radius: 50%;
+            z-index: 2;
+        }
+        .robot-dog-paw.left { left: 42px; top: 192px; }
+        .robot-dog-paw.right { left: 250px; top: 192px; }
+        .robot-dog-leg {
+            position: absolute;
+            width: 25px;
+            height: 90px;
+            background: linear-gradient(180deg, #a3b4c5, #7c8ca0);
+            border: 5px solid #5a6570;
+            border-radius: 18px;
+            z-index: 0;
+        }
+        .robot-dog-leg.left { left: 102px; top: 220px; }
+        .robot-dog-leg.right { left: 170px; top: 220px; }
+        .robot-dog-foot {
+            position: absolute;
+            width: 42px;
+            height: 22px;
+            background: #edf3f8;
+            border: 4px solid #5a6570;
+            border-radius: 18px 18px 12px 12px;
+            z-index: 1;
+        }
+        .robot-dog-foot.left { left: 88px; top: 294px; }
+        .robot-dog-foot.right { left: 162px; top: 294px; }
+        .robot-dog-tail {
+            position: absolute;
+            right: 0;
+            top: 140px;
+            width: 54px;
+            height: 18px;
+            background: linear-gradient(90deg, #b4c4d3, #7f8fa2);
+            border: 5px solid #5a6570;
+            border-radius: 12px;
+            transform: rotate(22deg);
+            animation: tail-wag 0.7s ease-in-out infinite alternate;
+            z-index: 0;
+        }
+        @keyframes tail-wag {
+            0% { transform: rotate(24deg); }
+            100% { transform: rotate(42deg); }
+        }
+        @keyframes arm-swing-left {
+            0% { transform: rotate(20deg); }
+            100% { transform: rotate(38deg); }
+        }
+        @keyframes arm-swing-right {
+            0% { transform: rotate(-20deg); }
+            100% { transform: rotate(-38deg); }
+        }
+        .robot-dog-arm.left { animation: arm-swing-left 0.8s ease-in-out infinite alternate; }
+        .robot-dog-arm.right { animation: arm-swing-right 0.8s ease-in-out infinite alternate; }
+        .robot-dog-leg.left { animation: leg-swing-left 0.8s ease-in-out infinite alternate; }
+        .robot-dog-leg.right { animation: leg-swing-right 0.8s ease-in-out infinite alternate; }
+        @keyframes leg-swing-left {
+            0% { transform: rotate(10deg); }
+            100% { transform: rotate(-12deg); }
+        }
+        @keyframes leg-swing-right {
+            0% { transform: rotate(-12deg); }
+            100% { transform: rotate(10deg); }
+        }
+        .speech-bubble {
+            position: absolute;
+            top: 12%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.82);
+            border: 1px solid rgba(255,255,255,0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 26px;
+            padding: 1rem 1.4rem;
+            box-shadow: 0 18px 32px rgba(95, 84, 78, 0.16);
+            max-width: 390px;
+            text-align: center;
+            font-size: 1.08rem;
+            line-height: 1.7;
+            color: #3a4a3a;
+            opacity: 0;
+            animation: bubble-rise 1.4s ease 1.2s forwards;
+        }
+        .speech-bubble::after {
+            content: "";
+            position: absolute;
+            left: 22%;
+            bottom: -16px;
+            width: 18px;
+            height: 18px;
+            background: rgba(255,255,255,0.82);
+            border-right: 1px solid rgba(255,255,255,0.7);
+            border-bottom: 1px solid rgba(255,255,255,0.7);
+            transform: rotate(45deg);
+        }
+        @keyframes bubble-rise {
+            0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        .speech-bubble strong {
+            color: var(--primary-color-light);
+            font-family: var(--heading-font);
+            font-size: 1.6rem;
+            letter-spacing: 0.04em;
+        }
+        .intro-button {
+            position: absolute;
+            left: 50%;
+            bottom: 8%;
+            transform: translateX(-50%) translateY(20px);
+            border: none;
+            border-radius: 999px;
+            padding: 1rem 2.3rem;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            background: linear-gradient(135deg, var(--primary-color-light), #6a8a6a);
+            color: white;
+            box-shadow: 0 14px 30px rgba(74, 106, 74, 0.22);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.5s ease;
+            opacity: 0;
+            visibility: hidden;
+        }
+        .intro-button.visible {
+            opacity: 1;
+            visibility: visible;
+            animation: show-button 0.8s ease forwards;
+        }
+        @keyframes show-button {
+            0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        .intro-button:hover {
+            transform: translateX(-50%) translateY(-2px);
+            box-shadow: 0 20px 35px rgba(74, 106, 74, 0.28);
+        }
         
         .page-content { opacity: 0; transition: opacity 1.5s ease-in; position: relative; background-color: var(--bg-color-light); }
         .page-content.visible { opacity: 1; }
+        body.fade-out-page {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
         
         /* --- Homepage Styles --- */
-        .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; background: linear-gradient(320deg, #d4e7d4, #c0d0c0, #e6f0e6); background-size: 400% 400%; animation: gradient-flow 15s ease infinite; position: relative; color: var(--text-color-light); overflow: hidden; }
+        .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; background: radial-gradient(circle at top, rgba(0,255,127,0.14), rgba(12,20,15,0.7) 35%, rgba(5,11,8,0.95) 100%), linear-gradient(180deg, #050b08 0%, #08130d 22%, #0d1d17 52%, #050b08 100%); background-size: 400% 400%; animation: gradient-flow 15s ease infinite; position: relative; color: var(--highlight-color-light); overflow: hidden; }
         @keyframes gradient-flow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        #ambient-light-canvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.95;
+            mix-blend-mode: screen;
+        }
         #hero-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
-        .hero-content { position: relative; z-index: 2; }
-        .hero-title { font-family: var(--heading-font); font-size: 5rem; background: linear-gradient(90deg, #4a6a4a, #8a9a8a, #4a6a4a); background-size: 200% 200%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: gradient-text-flow 5s ease infinite; }
+        .hero-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; max-width: 920px; }
+        .hero-copy { position: relative; display: inline-block; text-align: center; }
+        .hero-badge { display: inline-block; margin-bottom: 1.2rem; padding: 0.7rem 1.2rem; border-radius: 999px; background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.24); backdrop-filter: blur(6px); color: #fff; font-size: 0.72rem; letter-spacing: 0.18rem; text-transform: uppercase; box-shadow: 0 10px 25px rgba(52, 84, 65, 0.18); }
+        .hero-title {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 0.08em;
+            width: min(96vw, 1100px);
+            margin: 0 auto;
+            text-align: center;
+            font-family: var(--heading-font);
+            font-size: clamp(2.7rem, 5vw, 6rem);
+            line-height: 0.9;
+            letter-spacing: 0.04em;
+            background: linear-gradient(120deg, #f7f5ee 0%, #dfffe9 18%, #9be5d2 40%, #fdf0d1 68%, #f7f5ee 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 18px rgba(143, 255, 216, 0.35);
+            position: relative;
+            isolation: isolate;
+            animation: titleGlow 5s ease infinite;
+        }
+        .hero-title::after {
+            content: "";
+            position: absolute;
+            left: 22%;
+            right: 22%;
+            bottom: -12px;
+            height: 10px;
+            background: linear-gradient(90deg, transparent, rgba(143,255,216,0.9), transparent);
+            border-radius: 50%;
+            filter: blur(14px);
+            opacity: 0.9;
+        }
+        .hero-title .word {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            white-space: nowrap;
+            transform-origin: center;
+        }
+        .hero-title .letter {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(24px) scale(0.8);
+            animation: letter-rise 0.75s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            animation-delay: var(--delay, 0s);
+            transition: transform 0.25s ease, text-shadow 0.25s ease, filter 0.25s ease;
+            cursor: default;
+            transform-origin: center;
+        }
+        .hero-title .letter:hover {
+            transform: translateY(-6px) scale(1.08);
+            text-shadow: 0 0 18px rgba(255,255,255,0.95), 0 0 28px rgba(147, 255, 207, 0.8);
+            filter: drop-shadow(0 0 12px rgba(147, 255, 207, 0.8));
+        }
         @keyframes gradient-text-flow { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
-        .hero-subtitle { font-size: 1.3rem; margin-top: 1rem; color: #5a6a5a; }
-        .hero .date { font-size: 1.5rem; font-weight: 400; color: var(--primary-color-light); margin-top: 0.5rem; margin-bottom: 2rem; }
-        .scroll-down { position: absolute; bottom: 2rem; left: 50%; z-index: 2; color: var(--primary-color-light); font-size: 2.5rem; animation: pulse-light 2s infinite; text-decoration: none; }
+        @keyframes titleGlow { 0%, 100% { background-position: 0% 50%; filter: brightness(1); } 50% { background-position: 100% 50%; filter: brightness(1.12); } }
+        @keyframes letter-rise { 0% { opacity: 0; transform: translateY(24px) scale(0.8); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+        .hero-subtitle { font-size: 1.25rem; margin-top: 1.25rem; color: rgba(255,255,255,0.9); line-height: 1.8; max-width: 760px; text-shadow: 0 4px 18px rgba(0,0,0,0.14); }
+        .hero-subtitle .highlight { color: #fff4c2; font-weight: 600; text-shadow: 0 0 12px rgba(255, 233, 129, 0.45); }
+        .hero .date { font-size: 1rem; letter-spacing: 0.28rem; text-transform: uppercase; color: rgba(255,255,255,0.8); margin-top: 1.2rem; margin-bottom: 2rem; }
+        .scroll-down { position: absolute; bottom: 2rem; left: 50%; z-index: 2; color: #dfffe9; font-size: 2.5rem; animation: pulse-light 2s infinite; text-decoration: none; }
         @keyframes pulse-light { 0%, 100% { transform: scale(1) translateX(-50%); opacity: 0.7; } 50% { transform: scale(1.1) translateX(-50%); opacity: 1; } }
 
         /* --- Content Sections --- */
-        .section { padding: 5rem 2rem; max-width: 1200px; margin: 0 auto; text-align: center; position: relative; }
+        .section { padding: 5rem 2rem; max-width: 1200px; margin: 0 auto; text-align: center; position: relative; background: transparent; }
         .section-title { font-family: var(--heading-font); font-size: 3.5rem; color: var(--primary-color-light); margin-bottom: 3rem; }
-        .personality-card { background-color: var(--highlight-color-light); padding: 2.5rem; border-radius: 10px; border: 1px solid #e0e0e0; box-shadow: var(--box-shadow-light); margin-bottom: 1.5rem; text-align: left; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .section-lead { max-width: 700px; margin: 0 auto 2.5rem; font-size: 1.05rem; line-height: 1.8; color: rgba(220, 255, 233, 0.8); }
+        .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+        .story-card { background: linear-gradient(180deg, rgba(15,25,20,0.95) 0%, rgba(12,20,16,0.95) 100%); border: 1px solid rgba(120,255,177,0.18); box-shadow: var(--box-shadow-light); border-radius: 20px; padding: 2rem 1.5rem; text-align: center; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .story-card:hover { transform: translateY(-8px); box-shadow: 0 18px 36px rgba(74, 106, 74, 0.12); }
+        .story-card .emoji { font-size: 2.4rem; margin-bottom: 0.9rem; display: block; }
+        .story-card h3 { font-family: var(--heading-font); font-size: 2rem; color: var(--primary-color-light); margin-bottom: 0.7rem; }
+        .story-card p { font-size: 0.98rem; line-height: 1.7; color: rgba(220,255,233,0.75); }
+        .quote-banner { max-width: 820px; margin: 2.2rem auto 0; padding: 1.4rem 2rem; background: rgba(10, 20, 16, 0.9); border-left: 5px solid var(--primary-color-light); border-radius: 12px; box-shadow: var(--box-shadow-light); font-size: 1.15rem; color: #e8f9ee; }
+        .quote-banner strong { color: var(--primary-color-light); }
+        .personality-card { background: linear-gradient(180deg, rgba(16, 24, 20, 0.98) 0%, rgba(11, 17, 14, 0.98) 100%); padding: 2.5rem; border-radius: 10px; border: 1px solid rgba(120,255,177,0.2); box-shadow: var(--box-shadow-light); margin-bottom: 1.5rem; text-align: left; transition: transform 0.3s ease, box-shadow 0.3s ease; }
         .personality-card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(74, 106, 74, 0.15); }
         .personality-card h3 { display: flex; align-items: center; font-family: var(--heading-font); font-size: 1.8rem; color: var(--primary-color-light); margin-bottom: 0.5rem; }
         .card-icon { color: var(--accent-color-light); margin-right: 1rem; font-size: 1.5em; }
         
-        #gallery { background-color: #eaf0ea; }
+        #gallery { background-color: rgba(6, 13, 8, 0.9); }
         .photo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
-        .photo-card { background-color: var(--highlight-color-light); box-shadow: var(--box-shadow-light); border-radius: 10px; overflow: hidden; transition: transform 0.4s ease, box-shadow 0.4s ease; border: 3px solid transparent; aspect-ratio: 1 / 1; position: relative; }
-        .photo-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(74, 106, 74, 0.2); border-color: var(--accent-color-light); }
+        .photo-card { background: rgba(12, 18, 15, 0.95); box-shadow: var(--box-shadow-light); border-radius: 10px; overflow: hidden; transition: transform 0.4s ease, box-shadow 0.4s ease; border: 3px solid rgba(120,255,177,0.2); aspect-ratio: 1 / 1; position: relative; }
+        .photo-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0, 255, 127, 0.15); border-color: var(--primary-color-neon); }
         .photo-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .photo-card .caption { position: absolute; bottom: 0; left: 0; width: 100%; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(5px); padding: 0.75rem 1rem; font-weight: 600; color: #333; text-align: center; opacity: 0; transform: translateY(100%); transition: opacity 0.3s ease, transform 0.3s ease; }
+        .photo-card .caption { position: absolute; bottom: 0; left: 0; width: 100%; background: rgba(8, 15, 12, 0.8); backdrop-filter: blur(5px); padding: 0.75rem 1rem; font-weight: 600; color: #ebfff3; text-align: center; opacity: 0; transform: translateY(100%); transition: opacity 0.3s ease, transform 0.3s ease; }
         .photo-card:hover .caption { opacity: 1; transform: translateY(0); }
+
+        .video-section { background: linear-gradient(180deg, rgba(7, 16, 12, 0.95) 0%, rgba(8, 17, 13, 0.95) 100%); }
+        .video-open-btn {
+            display: inline-block;
+            margin: 0 auto 1.5rem;
+            padding: 1rem 2.2rem;
+            border: none;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #187d43, #22a55d);
+            color: white;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            box-shadow: 0 16px 28px rgba(24, 125, 67, 0.25);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease;
+            text-decoration: none;
+        }
+        .video-open-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 30px rgba(24, 125, 67, 0.3);
+        }
+        .surprise-button-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1.75rem;
+        }
+        .surprise-trigger {
+            border: none;
+            border-radius: 999px;
+            padding: 0.9rem 1.6rem;
+            background: #edf5ee;
+            color: var(--primary-color-light);
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(42, 93, 63, 0.08);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+        }
+        .surprise-trigger:hover,
+        .surprise-trigger.is-active {
+            background: linear-gradient(135deg, #187d43, #22a55d);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 14px 22px rgba(24, 125, 67, 0.22);
+        }
+        .theatre-wrap {
+            position: relative;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 1.2rem 0.5rem 0.2rem;
+            overflow: hidden;
+        }
+        .video-shell {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(10, 18, 14, 0.96);
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 24px 50px rgba(0, 255, 127, 0.09);
+            border: 1px solid rgba(120,255,177,0.22);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+        .video-shell video { width: 100%; display: block; background: #000; max-height: 520px; }
+
+        .cake-scene {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            min-height: 520px;
+            margin: 0 auto;
+            background: linear-gradient(180deg, rgba(6, 14, 10, 0.98) 0%, rgba(10, 21, 16, 0.98) 100%);
+            border-radius: 18px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 24px 50px rgba(0, 255, 127, 0.08);
+            border: 1px solid rgba(120,255,177,0.2);
+            overflow: hidden;
+        }
+        .cake-scene.visible { display: flex; }
+        .cake-scene::before {
+            content: "";
+            position: absolute;
+            inset: 18% 10% auto 10%;
+            height: 20%;
+            background: radial-gradient(circle, rgba(255, 187, 204, 0.25), rgba(255, 187, 204, 0));
+            filter: blur(12px);
+        }
+        .cake-wrap {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transform: translateY(18px);
+        }
+        .cake-text {
+            font-family: var(--heading-font);
+            font-size: clamp(2.2rem, 4vw, 4rem);
+            color: #5e7a63;
+            letter-spacing: 0.04em;
+            margin-bottom: 0.75rem;
+            text-align: center;
+        }
+        .cake {
+            position: relative;
+            width: 260px;
+            height: 170px;
+        }
+        .cake-top {
+            position: absolute;
+            left: 50%;
+            bottom: 78px;
+            width: 210px;
+            height: 52px;
+            transform: translateX(-50%);
+            background: linear-gradient(180deg, #fff1f6 0%, #ffd4e1 100%);
+            border-radius: 18px 18px 12px 12px;
+            box-shadow: inset 0 -8px 0 rgba(255, 200, 214, 0.8);
+        }
+        .cake-top::before,
+        .cake-top::after {
+            content: "";
+            position: absolute;
+            top: 10px;
+            width: 14px;
+            height: 14px;
+            background: #ffb7c6;
+            border-radius: 50%;
+        }
+        .cake-top::before { left: 26px; }
+        .cake-top::after { right: 26px; }
+        .cake-body {
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            width: 260px;
+            height: 110px;
+            transform: translateX(-50%);
+            background: linear-gradient(180deg, #f8d7a3 0%, #e6b56c 100%);
+            border-radius: 18px 18px 24px 24px;
+            box-shadow: inset 0 -18px 0 rgba(219, 151, 73, 0.3);
+        }
+        .cake-body::before {
+            content: "";
+            position: absolute;
+            inset: 18px 18px auto 18px;
+            height: 14px;
+            background: repeating-linear-gradient(
+                90deg,
+                #f7f7f7 0 18px,
+                #e3d4ca 18px 36px
+            );
+            border-radius: 999px;
+        }
+        .cake-body::after {
+            content: "";
+            position: absolute;
+            inset: auto 0 0 0;
+            height: 20px;
+            background: rgba(165, 104, 54, 0.2);
+            border-radius: 0 0 24px 24px;
+        }
+        .candle {
+            position: absolute;
+            bottom: 106px;
+            width: 12px;
+            height: 34px;
+            border-radius: 8px 8px 3px 3px;
+            background: linear-gradient(180deg, #fff2d6 0%, #f7d97f 100%);
+            box-shadow: inset 0 -6px 0 rgba(201, 164, 65, 0.35);
+        }
+        .candle::before {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: -18px;
+            width: 14px;
+            height: 18px;
+            transform: translateX(-50%);
+            background: radial-gradient(circle, #fff7c8 0%, #ffd75a 30%, #ffb703 100%);
+            border-radius: 50% 50% 35% 35%;
+            box-shadow: 0 0 10px rgba(255, 215, 90, 0.9);
+        }
+        .candle:nth-child(2) { left: 38%; }
+        .candle:nth-child(3) { left: 50%; }
+        .candle:nth-child(4) { left: 62%; }
+        .candle:nth-child(5) { left: 74%; }
+        .cake-dots {
+            position: absolute;
+            inset: auto 0 0 0;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.5) 0 30%, transparent 30% 100%);
+            background-size: 24px 24px;
+            opacity: 0.35;
+            pointer-events: none;
+        }
+        .theatre-curtain {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 50%;
+            z-index: 3;
+            background:
+                linear-gradient(90deg, rgba(255,255,255,0.12), rgba(255,255,255,0.02) 18%, rgba(0,0,0,0.08) 100%),
+                repeating-linear-gradient(
+                    90deg,
+                    #115d35 0%,
+                    #1b7d47 12%,
+                    #0d452a 24%,
+                    #165f3b 38%,
+                    #0c4b2d 52%,
+                    #1b7d47 66%,
+                    #0d4d2d 82%,
+                    #157447 100%
+                );
+            box-shadow: inset 0 0 0 3px rgba(255, 239, 168, 0.8), inset 0 0 18px rgba(0,0,0,0.35);
+            overflow: hidden;
+        }
+        .theatre-curtain::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                90deg,
+                rgba(255,255,255,0.1) 0 8px,
+                rgba(0,0,0,0.06) 8px 16px
+            );
+            opacity: 0.5;
+        }
+        .theatre-curtain::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 18px;
+            background: linear-gradient(180deg, #f4f0cc 0%, #d9d18a 45%, #a5822b 100%);
+            box-shadow: 0 0 12px rgba(220, 204, 124, 0.7);
+        }
+        .theatre-curtain.left {
+            left: 0;
+            transform-origin: left center;
+        }
+        .theatre-curtain.left::after {
+            right: 8px;
+        }
+        .theatre-curtain.right {
+            right: 0;
+            transform-origin: right center;
+        }
+        .theatre-curtain.right::after {
+            left: 8px;
+        }
+        @keyframes curtain-open-green-left {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-105%); }
+        }
+        @keyframes curtain-open-green-right {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(105%); }
+        }
+        .theatre-wrap.is-open .video-shell {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .theatre-wrap.is-open .theatre-curtain.left {
+            animation: curtain-open-green-left 1.4s cubic-bezier(0.23, 1, 0.32, 1) 0.2s forwards;
+        }
+        .theatre-wrap.is-open .theatre-curtain.right {
+            animation: curtain-open-green-right 1.4s cubic-bezier(0.23, 1, 0.32, 1) 0.2s forwards;
+        }
+        .theatre-stage-light {
+            position: absolute;
+            left: 50%;
+            top: 6%;
+            width: 60%;
+            height: 42%;
+            transform: translateX(-50%);
+            background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(176,255,210,0.55) 18%, rgba(99,219,132,0.2) 42%, rgba(99,219,132,0) 72%);
+            filter: blur(8px);
+            z-index: 1;
+            pointer-events: none;
+        }
+        .video-note { font-size: 1rem; margin-top: 1.25rem; color: var(--text-color-light); opacity: 0.9; }
+        .video-complete-message {
+            max-width: 840px;
+            margin: 1.25rem auto 0;
+            padding: 1rem 1.3rem;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(20, 88, 52, 0.08), rgba(255, 255, 255, 0.7));
+            border: 1px solid rgba(20, 88, 52, 0.15);
+            color: #1d3b2c;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            box-shadow: 0 10px 25px rgba(20, 88, 52, 0.08);
+            opacity: 0;
+            transform: translateY(12px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            pointer-events: none;
+        }
+        .video-complete-message .highlight-word {
+            font-weight: 800;
+            color: #0d673d;
+            text-shadow: 0 0 8px rgba(25, 124, 76, 0.25);
+        }
+        .video-complete-message.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
         /* --- Finale Overlay --- */
         #name-celebration-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 998; opacity: 0; transition: opacity 1s ease-in-out; pointer-events: none; overflow: hidden; background: #000; }
@@ -94,7 +875,7 @@
         .secret-modal h2 { color: var(--primary-color-neon); }
         .close-modal { position: absolute; top: 15px; right: 20px; font-size: 2rem; color: #fff; cursor: pointer; transition: transform 0.2s ease; }
         
-        footer { padding: 4rem 2rem; text-align: center; background: #eaf0ea; color: var(--text-color-light); }
+        footer { padding: 4rem 2rem; text-align: center; background: rgba(6, 13, 8, 0.96); color: var(--text-color-light); }
 
         /* --- DARK THEME Creator "About Page" Styles --- */
         .creator-trigger-section { padding-top: 3rem; padding-bottom: 5rem; text-align: center; }
@@ -188,18 +969,46 @@
     </style>
 </head>
 <body>
-    
-    <div id="preloader">
-        <div id="hacker-terminal"></div>
-    </div>
+    <div id="intro-screen" class="intro-screen">
+        <div class="intro-scene">
+            <div class="whatsapp-card" aria-label="Fake WhatsApp conversation">
+                <div class="whatsapp-header">
+                    <div class="whatsapp-avatar">💬</div>
+                    <span>Jyothi</span>
+                </div>
+                <div class="chat-area" id="whatsapp-chat">
+                    <div class="typing-row" id="typing-row" aria-live="polite">
+                        <div class="typing-bubble">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    <div id="hacked-overlay">
-        <div class="hacked-content">
-            <div class="hacked-icon">☠️</div>
-            <h1>SYSTEM HACKED</h1>
-            <p>Don't worry, we're just hijacking this device for getting information...</p>
-            <p>Initiating hacking protocol in...</p>
-            <div id="hacked-countdown">5</div>
+            <button id="enterBirthdayBtn" class="intro-button">Open Birthday Surprise</button>
+
+            <div class="walking-boy" aria-label="cute robot dog" style="display:none;">
+                <div class="robot-dog-ear left"></div>
+                <div class="robot-dog-ear right"></div>
+                <div class="robot-dog-head"></div>
+                <div class="robot-dog-eye left"></div>
+                <div class="robot-dog-eye right"></div>
+                <div class="robot-dog-nose"></div>
+                <div class="robot-dog-mouth"></div>
+                <div class="robot-dog-tail"></div>
+                <div class="robot-dog-body"></div>
+                <div class="robot-dog-belly"></div>
+                <div class="robot-dog-arm left"></div>
+                <div class="robot-dog-arm right"></div>
+                <div class="robot-dog-paw left"></div>
+                <div class="robot-dog-paw right"></div>
+                <div class="robot-dog-leg left"></div>
+                <div class="robot-dog-leg right"></div>
+                <div class="robot-dog-foot left"></div>
+                <div class="robot-dog-foot right"></div>
+            </div>
         </div>
     </div>
 
@@ -209,11 +1018,19 @@
             <div id="wish-text"></div>
         </div>
 
+        <canvas id="ambient-light-canvas"></canvas>
         <header class="hero">
             <canvas id="hero-canvas"></canvas>
             <div class="hero-content">
-                <h1 class="hero-title" data-aos="zoom-in">Happy Birthday, Jyothi!</h1> <br>
-                <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="200">On this special day, may your life be filled with love, laughter, and endless blessings. <br>You deserve nothing but the best, today and always. 🌟</p>
+                <div class="hero-copy" data-aos="zoom-in">
+                    <div class="hero-badge">For your shining year</div>
+                    <h1 id="heroTitle" class="hero-title" aria-label="Happy Birthday Jyothi">
+                        <span class="word">Happy</span>
+                        <span class="word">Birthday,</span>
+                        <span class="word">Jyothi!</span>
+                    </h1>
+                </div>
+                <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="200">On your special day, may your life be filled with gentle blessings, unforgettable smiles, and all the love you truly deserve. <span class="highlight">You are beautiful, kind, and deeply treasured.</span> 🌟</p>
                 <p class="date" data-aos="fade-up" data-aos-delay="300">September 28th</p>
             </div>
             <a href="#celebration-section" class="scroll-down">↓</a>
@@ -222,7 +1039,26 @@
         <main>
             <section id="celebration-section" class="section">
                 <h2 class="section-title" data-aos="fade-up">A Celebration of You</h2>
-                <div class="personality-card" data-aos="fade-right">
+                <p class="section-lead" data-aos="fade-up" data-aos-delay="100">Every day with you feels brighter, softer, and more meaningful. You carry warmth, love, and quiet strength in the way you move through life.</p>
+                <div class="story-grid">
+                    <div class="story-card" data-aos="fade-up" data-aos-delay="100">
+                        <span class="emoji">✨</span>
+                        <h3>Your Spark</h3>
+                        <p>You light up every room with your charm, confidence, and natural glow. Your presence leaves a beautiful mark on everyone around you.</p>
+                    </div>
+                    <div class="story-card" data-aos="fade-up" data-aos-delay="200">
+                        <span class="emoji">💛</span>
+                        <h3>Your Heart</h3>
+                        <p>Your kindness is real and deep. You make people feel seen, loved, and cared for in ways that stay with them long after the moment passes.</p>
+                    </div>
+                    <div class="story-card" data-aos="fade-up" data-aos-delay="300">
+                        <span class="emoji">🌸</span>
+                        <h3>Your Grace</h3>
+                        <p>There is something so comforting and beautiful about the way you carry yourself. Your gentle soul deserves all the happiness in the world.</p>
+                    </div>
+                </div>
+                <div class="quote-banner" data-aos="fade-up" data-aos-delay="200"><strong>“You are not just loved.</strong> You are cherished, admired, and deeply appreciated.”</div>
+                <div class="personality-card" data-aos="fade-right" style="margin-top: 2.5rem;">
                     <h3><span class="card-icon">✨</span>Your Incredible Strength</h3>
                     <p>You have an amazing strength to face any challenge with courage. Your determination and positivity lift everyone around you. You make hard things look easy with your confidence and energy.</p>
                 </div>
@@ -239,27 +1075,64 @@
                 <div class="photo-grid"> 
                     <div class="photo-card" data-aos="zoom-in" data-aos-delay="100">
                         <img src="images/pic1.jpg" alt="A cherished first memory with Jyothi">
-                        <p class="caption">  You will find happiness with people who truly value your caring nature</p>
+                        <p class="caption">You bring joy to every season of life.</p>
                     </div>
                     <div class="photo-card" data-aos="zoom-in" data-aos-delay="200">
                         <img src="images/pic2.jpg" alt="An unforgettable adventure with Jyothi">
-                        <p class="caption">Your smile spreads happiness and brightens up the room.</p>
+                        <p class="caption">Your smile makes even ordinary moments feel magical.</p>
                     </div>
                     <div class="photo-card" data-aos="zoom-in" data-aos-delay="300">
                         <img src="images/pic3.jpg" alt="Jyothi shining bright during a celebration">
-                        <p class="caption">I’ve always loved your kind heart and your playful, childish behavior back in our 10th class</p>
+                        <p class="caption">A heart like yours deserves to be celebrated every single day.</p>
                     </div>
                 </div>
             </section>
 
+            <section id="video-section" class="section video-section">
+                <h2 class="section-title" data-aos="fade-up">A Little Suprises for You</h2>
+                <div class="surprise-button-row">
+                    <button class="surprise-trigger is-active" type="button" data-page="surprise1.html" data-label="Surprise 1">Video </button>
+                    <button class="surprise-trigger" type="button" data-page="surprise2.html" data-label="Surprise 2">Quiz</button>
+                </div>
+                <div class="theatre-wrap" data-aos="zoom-in" id="theatreWrap" style="display:none;">
+                    <div class="theatre-stage-light"></div>
+                    <div class="theatre-curtain left"></div>
+                    <div class="theatre-curtain right"></div>
+                    <div class="video-shell" id="videoShell">
+                        <video id="birthdayVideo" controls playsinline preload="metadata">
+                            <source src="Journey.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                    <div id="video-complete-message" class="video-complete-message" aria-live="polite">
+                        “ఈ వీడియో చేసిన ఫన్ కోసం కాదు. నువ్వు నిజంగా ఎంత ఇబ్బంది పడుతున్నావో నాకు తెలుసు. కానీ అయినా మోటివేట్ అయ్యి వెళ్తున్నావో కదా. నిజంగా నీకు నా హ్యాట్సాఫ్ జో”
+                    </div>
+                    <div class="cake-scene" id="cakeScene" aria-label="Birthday cake surprise">
+                        <div class="cake-wrap">
+                            <div class="cake-text">Happy Birthday, Jyothi!</div>
+                            <div class="cake" aria-hidden="true">
+                                <span class="candle"></span>
+                                <span class="candle"></span>
+                                <span class="candle"></span>
+                                <span class="candle"></span>
+                                <div class="cake-top"></div>
+                                <div class="cake-body"></div>
+                                <div class="cake-dots"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="video-note" data-aos="fade-up" data-aos-delay="100">A little keepsake of love, made with a smile and a little extra sparkle for your birthday.</p>
+            </section>
+
             <section class="section">
-                <h2 class="section-title" data-aos="fade-up">Your Suprise!</h2>
-                <p data-aos="fade-up" data-aos-delay="100" style="max-width: 600px; margin: 0 auto 2rem auto;">Because a star like you deserve more special right</p>
-                <button id="crackerButton" class="cracker-button" data-aos="zoom-in" data-aos-delay="200">Click here b'day girl</button>
+                <h2 class="section-title" data-aos="fade-up">Your Surprise!</h2>
+                <p data-aos="fade-up" data-aos-delay="100" style="max-width: 650px; margin: 0 auto 2rem auto; line-height: 1.8; color: rgba(58,74,58,0.82);">Because a person as special as you deserves a celebration full of love, warm wishes, and a little magic.</p>
+                <button id="crackerButton" class="cracker-button" data-aos="zoom-in" data-aos-delay="200">Click here, birthday girl ✨</button>
             </section>
             
             <section class="creator-trigger-section">
-                 <a id="creator-trigger-link" href="#" data-aos="fade-up">A  message from Admin</a>
+                 <a id="creator-trigger-link" href="#" data-aos="fade-up">A message from Admin</a>
             </section>
 
         </main>
@@ -272,7 +1145,7 @@
             <span id="close-creator-page" class="close-modal">&times;</span>
             <div class="creator-page-content">
                 <div class="creator-photo-frame">
-                    <img src="images/profile.jpg" alt="A photo of the creator">
+                    <img src="images/pro 6.jpeg" alt="A photo of the creator">
                 </div>
                 <div class="creator-text-content">
                     <h2>From Abhi</h2>
@@ -295,54 +1168,142 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 
     <script>
-        // --- HACKED INTRO & PRANK LOGIC (Unchanged) ---
-        window.addEventListener('load', () => {
-            const preloader = document.getElementById('preloader');
-            const terminal = document.getElementById('hacker-terminal');
-            const mainContent = document.querySelector('.page-content');
-            const hackedOverlay = document.getElementById('hacked-overlay');
-            const countdownElement = document.getElementById('hacked-countdown');
-            const hackerMessages = [ "Initiating connection...", "Bypassing firewall Security...", "WARNING: System security weakness!", "Target identified: Jyothi Mobile.." ];
-            let messageIndex = 0;
-            function typeHackerLine() {
-                if (messageIndex < hackerMessages.length) {
-                    const lineText = hackerMessages[messageIndex];
-                    const p = document.createElement('p');
-                    p.className = 'line';
-                    p.textContent = lineText;
-                    const typingDuration = lineText.length * 90;
-                    p.style.animation = `typing ${typingDuration}ms steps(${lineText.length}, end), blink-caret .75s step-end infinite`;
-                    terminal.innerHTML = ''; 
-                    terminal.appendChild(p);
-                    messageIndex++;
-                    setTimeout(typeHackerLine, typingDuration + 1200);
-                } else {
-                    setTimeout(() => {
-                        preloader.style.opacity = 0;
-                        hackedOverlay.classList.add('visible');
-                        let countdown = 5;
-                        countdownElement.textContent = countdown;
-                        const interval = setInterval(() => {
-                            countdown--;
-                            countdownElement.textContent = countdown;
-                            if (countdown <= 0) {
-                                clearInterval(interval);
-                                hackedOverlay.style.opacity = 0;
-                                preloader.classList.add('hidden');
-                                mainContent.classList.add('visible');
-                                setTimeout(() => {
-                                    preloader.style.display = 'none';
-                                    hackedOverlay.style.display = 'none';
-                                }, 1500);
-                            }
-                        }, 1000);
-                    }, 1000);
-                }
+        const introScreen = document.getElementById('intro-screen');
+        const enterBirthdayBtn = document.getElementById('enterBirthdayBtn');
+        const mainContent = document.querySelector('.page-content');
+        const whatsappChat = document.getElementById('whatsapp-chat');
+        const typingRow = document.getElementById('typing-row');
+        const shouldSkipIntro = new URLSearchParams(window.location.search).get('skipIntro') === '1';
+
+        function showMainContent() {
+            if (introScreen && mainContent) {
+                introScreen.classList.add('hidden');
+                mainContent.classList.add('visible');
+                window.scrollTo({ top: 0, behavior: 'auto' });
+                setTimeout(() => {
+                    introScreen.style.display = 'none';
+                    window.scrollTo({ top: 0, behavior: 'auto' });
+                }, 800);
             }
-            setTimeout(typeHackerLine, 500);
-        });
+        }
+
+        if (shouldSkipIntro && introScreen && mainContent) {
+            introScreen.classList.add('hidden');
+            mainContent.classList.add('visible');
+            introScreen.style.display = 'none';
+            const targetSection = document.getElementById('video-section');
+            if (targetSection) {
+                setTimeout(() => {
+                    targetSection.scrollIntoView({ behavior: 'auto', block: 'start' });
+                }, 50);
+            }
+        }
+
+        if (enterBirthdayBtn) {
+            enterBirthdayBtn.textContent = "Let's See";
+            enterBirthdayBtn.addEventListener('click', showMainContent);
+        }
+
+        function revealWhatsAppConversation() {
+            const messages = [
+                { sender: 'me', text: 'Hi madam, how are you?' },
+                { sender: 'her', text: 'I am good 😊' },
+                { sender: 'me', text: 'Remember last time I made this for you, and you saw it only a month later?' },
+                { sender: 'her', text: 'Yes, I remember 😄' },
+                { sender: 'me', text: 'This time I wanted to make it at the right moment, because you deserve happiness at the perfect time.' },
+                { sender: 'her', text: 'Aww, that means a lot ❤️' },
+                { sender: 'me', text: 'I hope this makes you smile and feel special today.' },
+                {sender: 'her', text: 'I am sure it will! Thank you for thinking of me 💛' },
+                {sender:'me',text:'నేను ఇది చేసింది నా ఫ్రెండ్ కోసం. నీకు నచ్చిందని అనుకుంటున్నాను. సరేనా?'},
+                { sender: 'typing', text: '' }
+            ];
+
+            let index = 0;
+
+            const addMessage = (sender, text) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = `chat-message ${sender}`;
+
+                const bubble = document.createElement('div');
+                bubble.className = 'chat-bubble';
+                bubble.textContent = text;
+
+                wrapper.appendChild(bubble);
+                whatsappChat.insertBefore(wrapper, typingRow);
+            };
+
+            const showNextMessage = () => {
+                if (index >= messages.length) {
+                    setTimeout(() => {
+                        const birthdayMessage = document.createElement('div');
+                        birthdayMessage.className = 'chat-message me';
+                        const bubble = document.createElement('div');
+                        bubble.className = 'chat-bubble';
+                        bubble.textContent = 'YOUR BIRTHDAY 🎉🎂';
+                        birthdayMessage.appendChild(bubble);
+                        whatsappChat.insertBefore(birthdayMessage, typingRow);
+                        typingRow.classList.remove('visible');
+                        setTimeout(() => {
+                            if (enterBirthdayBtn) {
+                                enterBirthdayBtn.classList.add('visible');
+                            }
+                        }, 500);
+                    }, 700);
+                    return;
+                }
+
+                const current = messages[index];
+                index += 1;
+
+                if (current.sender === 'typing') {
+                    typingRow.classList.add('visible');
+                    setTimeout(() => {
+                        typingRow.classList.remove('visible');
+                        showNextMessage();
+                    }, 1400);
+                    return;
+                }
+
+                addMessage(current.sender, current.text);
+                setTimeout(showNextMessage, 700);
+            };
+
+            showNextMessage();
+        }
+
+        revealWhatsAppConversation();
 
         AOS.init({ duration: 800, once: true, offset: 50 });
+
+        const heroTitle = document.getElementById('heroTitle');
+        if (heroTitle) {
+            heroTitle.querySelectorAll('.word').forEach((word, wordIndex) => {
+                const letters = Array.from(word.textContent).map((char, index) => {
+                    const span = document.createElement('span');
+                    span.className = 'letter';
+                    span.textContent = char === ' ' ? '\u00A0' : char;
+                    span.style.setProperty('--delay', `${(wordIndex + 1) * 0.18 + index * 0.08}s`);
+                    return span;
+                });
+                word.textContent = '';
+                letters.forEach((letter) => word.appendChild(letter));
+            });
+
+            heroTitle.querySelectorAll('.letter').forEach((letter) => {
+                letter.addEventListener('pointermove', (event) => {
+                    const rect = letter.getBoundingClientRect();
+                    const x = (event.clientX - (rect.left + rect.width / 2)) / rect.width;
+                    const y = (event.clientY - (rect.top + rect.height / 2)) / rect.height;
+                    if (Math.abs(x) < 0.9 && Math.abs(y) < 0.9) {
+                        letter.style.transform = `translate(${x * 8}px, ${y * 8}px) scale(1.08)`;
+                    }
+                });
+
+                letter.addEventListener('pointerleave', () => {
+                    letter.style.transform = '';
+                });
+            });
+        }
 
         // --- ✅ REUSABLE Bubble Animation Logic ---
         function setupBubbleAnimation(canvasId, bubbleColor) {
@@ -391,6 +1352,91 @@
         // --- Initialize BOTH Bubble Animations ---
         setupBubbleAnimation('hero-canvas', 'rgba(74, 106, 74, 0.2)');
         setupBubbleAnimation('creator-canvas', 'rgba(255, 255, 255, 0.15)'); // White bubbles for dark theme
+
+        function setupAmbientLightParticles() {
+            const canvas = document.getElementById('ambient-light-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const colors = ['#ff4d6d', '#ffd166', '#06d6a0', '#4cc9f0', '#80ed99', '#7b2cbf', '#ff9f1c', '#f72585'];
+            let particles = [];
+
+            const hexToRgba = (hex, alpha) => {
+                const clean = hex.replace('#', '');
+                const value = clean.length === 3
+                    ? clean.split('').map((ch) => ch + ch).join('')
+                    : clean;
+                const num = parseInt(value, 16);
+                const r = (num >> 16) & 255;
+                const g = (num >> 8) & 255;
+                const b = num & 255;
+                return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+            };
+
+            const resizeCanvas = () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            };
+
+            const createParticle = () => ({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                r: Math.random() * 3 + 2,
+                vx: (Math.random() - 0.5) * 0.8,
+                vy: (Math.random() - 0.5) * 0.8,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                alpha: Math.random() * 0.8 + 0.2
+            });
+
+            const generateParticles = () => {
+                particles = [];
+                const count = Math.min(110, Math.max(60, Math.floor((canvas.width * canvas.height) / 16)));
+                for (let i = 0; i < count; i++) {
+                    particles.push(createParticle());
+                }
+            };
+
+            resizeCanvas();
+            generateParticles();
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+                generateParticles();
+            });
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach((particle) => {
+                    particle.x += particle.vx;
+                    particle.y += particle.vy;
+
+                    if (particle.x < -20) particle.x = canvas.width + 20;
+                    if (particle.x > canvas.width + 20) particle.x = -20;
+                    if (particle.y < -20) particle.y = canvas.height + 20;
+                    if (particle.y > canvas.height + 20) particle.y = -20;
+
+                    const gradient = ctx.createRadialGradient(
+                        particle.x,
+                        particle.y,
+                        0,
+                        particle.x,
+                        particle.y,
+                        particle.r * 8
+                    );
+                    gradient.addColorStop(0, hexToRgba(particle.color, particle.alpha));
+                    gradient.addColorStop(0.4, hexToRgba(particle.color, particle.alpha * 0.5));
+                    gradient.addColorStop(1, 'rgba(255,255,255,0)');
+
+                    ctx.beginPath();
+                    ctx.fillStyle = gradient;
+                    ctx.arc(particle.x, particle.y, particle.r * 6, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                requestAnimationFrame(animate);
+            }
+
+            animate();
+        }
+
+        setupAmbientLightParticles();
 
         // --- Line-Drawing Name Animation Logic ---
         const crackerButton = document.getElementById('crackerButton');
@@ -462,11 +1508,77 @@
         const closeCreatorPage = () => { creatorPageOverlay.classList.remove('visible'); document.body.classList.remove('modal-open'); };
         creatorTriggerLink.addEventListener('click', (e) => { e.preventDefault(); creatorPageOverlay.classList.add('visible'); document.body.classList.add('modal-open'); });
         closeCreatorBtn.addEventListener('click', closeCreatorPage);
-        creatorPageOverlay.addEventListener('click', (event) => { if (event.target === creatorPageOverlay) { closeCreatorPage(); } });
+        creatorPageOverlay.addEventListener('click',  (event) => { if (event.target === creatorPageOverlay) { closeCreatorPage(); } });
+
+        const surpriseTriggers = document.querySelectorAll('.surprise-trigger');
+        const theatreWrap = document.getElementById('theatreWrap');
+        const birthdayVideo = document.getElementById('birthdayVideo');
+        const videoShell = document.getElementById('videoShell');
+        const cakeScene = document.getElementById('cakeScene');
+        const videoCompletionMessage = document.getElementById('video-complete-message');
+
+        function showVideoCompletionMessage() {
+            if (videoCompletionMessage) {
+                videoCompletionMessage.classList.add('visible');
+            }
+        }
+
+        function hideVideoCompletionMessage() {
+            if (videoCompletionMessage) {
+                videoCompletionMessage.classList.remove('visible');
+            }
+        }
+
+        if (birthdayVideo) {
+            birthdayVideo.addEventListener('play', hideVideoCompletionMessage);
+            birthdayVideo.addEventListener('ended', showVideoCompletionMessage);
+            birthdayVideo.addEventListener('error', () => {
+                setTimeout(showVideoCompletionMessage, 2000);
+            });
+            birthdayVideo.addEventListener('loadedmetadata', () => {
+                if (!Number.isFinite(birthdayVideo.duration) || birthdayVideo.duration <= 0) {
+                    setTimeout(showVideoCompletionMessage, 2000);
+                }
+            });
+        }
+
+        surpriseTriggers.forEach((button) => {
+            button.addEventListener('click', () => {
+                const targetPage = button.dataset.page;
+                if (targetPage) {
+                    window.location.href = targetPage;
+                    return;
+                }
+
+                surpriseTriggers.forEach((item) => item.classList.remove('is-active'));
+                button.classList.add('is-active');
+
+                theatreWrap.style.display = 'block';
+                theatreWrap.classList.remove('is-open');
+                void theatreWrap.offsetWidth;
+                theatreWrap.classList.add('is-open');
+
+                const label = button.dataset.label;
+                const isCakeReveal = label === 'Surprise 3';
+
+                if (isCakeReveal) {
+                    videoShell.style.display = 'none';
+                    cakeScene.classList.add('visible');
+                    birthdayVideo.pause();
+                    birthdayVideo.currentTime = 0;
+                } else {
+                    cakeScene.classList.remove('visible');
+                    videoShell.style.display = 'block';
+                    birthdayVideo.currentTime = 0;
+                    birthdayVideo.play().catch(() => {
+                        console.log('Video playback needs user interaction to start.');
+                    });
+                }
+            });
+        });
     </script>
 </body>
 
 </html>
-
 
 
