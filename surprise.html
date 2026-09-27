@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Birthday Surprise</title>
+  <style>
+    :root {
+      --green-1: #0f5f35;
+      --green-2: #1a7a46;
+      --green-3: #0d4228;
+      --gold: #f3df8d;
+      --white: #f5f7f2;
+      --dark: #0c1910;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      height: 100%;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg, #eaf4eb, #f8fbf8);
+      color: #1d2b1f;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+      opacity: 0;
+      animation: pageFadeIn 0.8s ease forwards;
+    }
+
+    body.fade-out {
+      opacity: 1;
+      animation: pageFadeOut 0.6s ease forwards;
+    }
+
+    @keyframes pageFadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pageFadeOut {
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(-12px); }
+    }
+
+    .surprise-page {
+      position: relative;
+      width: min(92vw, 980px);
+      padding: 2rem 1rem;
+      text-align: center;
+    }
+
+    .title {
+      margin-bottom: 1rem;
+      font-size: clamp(1.8rem, 3vw, 2.8rem);
+      font-weight: 800;
+      color: var(--green-1);
+      letter-spacing: 0.05em;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      width: 46px;
+      height: 46px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--green-1);
+      font-size: 2rem;
+      line-height: 1;
+      cursor: pointer;
+      box-shadow: 0 12px 22px rgba(15, 95, 53, 0.12);
+      z-index: 20;
+    }
+
+    .theatre-wrap {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      overflow: hidden;
+      border-radius: 18px;
+      box-shadow: 0 26px 48px rgba(13, 35, 23, 0.18);
+      background: #dfeee0;
+      min-height: 520px;
+    }
+
+    .video-shell {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+      background: #000;
+    }
+
+    .video-shell video {
+      display: block;
+      width: 100%;
+      max-height: 520px;
+      background: #000;
+    }
+
+    .theatre-curtain {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 50%;
+      z-index: 3;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02) 18%, rgba(0,0,0,0.08) 100%),
+        repeating-linear-gradient(
+          90deg,
+          var(--green-1) 0%,
+          var(--green-2) 12%,
+          var(--green-3) 24%,
+          var(--green-2) 38%,
+          var(--green-1) 52%,
+          var(--green-2) 66%,
+          var(--green-3) 82%,
+          var(--green-2) 100%
+        );
+      box-shadow: inset 0 0 0 3px rgba(255, 240, 174, 0.8), inset 0 0 18px rgba(0,0,0,0.32);
+    }
+
+    .theatre-curtain::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        90deg,
+        rgba(255,255,255,0.1) 0 8px,
+        rgba(0,0,0,0.08) 8px 16px
+      );
+      opacity: 0.55;
+    }
+
+    .theatre-curtain::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 18px;
+      background: linear-gradient(180deg, #f1f4e1 0%, #d6d890 42%, #b08d2c 100%);
+      box-shadow: 0 0 12px rgba(255, 237, 149, 0.8);
+    }
+
+    .theatre-curtain.left { left: 0; }
+    .theatre-curtain.left::after { right: 8px; }
+
+    .theatre-curtain.right { right: 0; }
+    .theatre-curtain.right::after { left: 8px; }
+
+    .theatre-wrap.is-open .video-shell {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .theatre-wrap.is-open .theatre-curtain.left {
+      animation: curtain-left 1.4s cubic-bezier(0.23, 1, 0.32, 1) 0.2s forwards;
+    }
+
+    .theatre-wrap.is-open .theatre-curtain.right {
+      animation: curtain-right 1.4s cubic-bezier(0.23, 1, 0.32, 1) 0.2s forwards;
+    }
+
+    @keyframes curtain-left {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-105%); }
+    }
+
+    @keyframes curtain-right {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(105%); }
+    }
+
+    .controls {
+      margin-top: 1.4rem;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 0.9rem 1.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+
+    .open-btn {
+      background: linear-gradient(135deg, var(--green-2), var(--green-1));
+      color: white;
+      box-shadow: 0 15px 24px rgba(16, 86, 48, 0.24);
+    }
+
+    .home-btn {
+      background: #ffffff;
+      color: var(--green-1);
+      border: 1px solid rgba(17, 93, 53, 0.28);
+    }
+
+    .status {
+      margin-top: 0.9rem;
+      min-height: 24px;
+      font-size: 0.95rem;
+      color: var(--green-1);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="surprise-page">
+    <button class="close-btn" type="button" aria-label="Close surprise" onclick="window.location.href='demo.html?skipIntro=1#video-section'">×</button>
+    <h1 class="title">Special Birthday Surprise</h1>
+
+    <div class="theatre-wrap" id="theatreWrap">
+      <div class="theatre-curtain left"></div>
+      <div class="theatre-curtain right"></div>
+
+      <div class="video-shell">
+        <video id="birthdayVideo" controls preload="metadata" playsinline>
+          <source src="Journey.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="openBtn" class="btn open-btn" type="button">Open Surprise</button>
+      <button id="homeBtn" class="btn home-btn" type="button">Return Home</button>
+    </div>
+
+    <div id="statusText" class="status"></div>
+  </div>
+
+  <script>
+    const theatreWrap = document.getElementById('theatreWrap');
+    const openBtn = document.getElementById('openBtn');
+    const homeBtn = document.getElementById('homeBtn');
+    const statusText = document.getElementById('statusText');
+    const birthdayVideo = document.getElementById('birthdayVideo');
+    const closeBtn = document.querySelector('.close-btn');
+
+    openBtn.addEventListener('click', () => {
+      theatreWrap.classList.add('is-open');
+      openBtn.disabled = true;
+      openBtn.style.opacity = '0.7';
+      openBtn.textContent = 'Surprise Opened';
+      statusText.textContent = 'The curtains are opening...';
+
+      setTimeout(() => {
+        birthdayVideo.play().catch(() => {});
+        statusText.textContent = 'Enjoy your surprise 🎉';
+      }, 1200);
+    });
+
+    homeBtn.addEventListener('click', () => {
+      document.body.classList.add('fade-out');
+      statusText.textContent = 'Returning to home page...';
+      setTimeout(() => {
+        window.location.href = 'demo.html?skipIntro=1#video-section';
+      }, 500);
+    });
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => {
+        document.body.classList.add('fade-out');
+        statusText.textContent = 'Returning to home page...';
+        setTimeout(() => {
+          window.location.href = 'demo.html?skipIntro=1#video-section';
+        }, 500);
+      });
+    }
+  </script>
+</body>
+</html>

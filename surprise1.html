@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Surprise 1</title>
+  <style>
+    :root {
+      --green-1: #0f5f35;
+      --green-2: #1a7a46;
+      --green-3: #0d4228;
+      --gold: #f3df8d;
+      --white: #f5f7f2;
+      --dark: #0c1910;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top, rgba(28, 120, 70, 0.35), transparent 35%), linear-gradient(180deg, #020a07 0%, #081c12 35%, #020a07 100%);
+      font-family: Arial, sans-serif;
+      color: #e5ffe8;
+      overflow: hidden;
+    }
+    .surprise-page {
+      position: relative;
+      width: min(92vw, 980px);
+      padding: 2rem 1rem;
+      text-align: center;
+      background: rgba(10, 22, 16, 0.72);
+      border: 1px solid rgba(109, 255, 170, 0.2);
+      border-radius: 22px;
+      box-shadow: 0 0 28px rgba(52, 255, 148, 0.12);
+    }
+    .title { margin-bottom: 1rem; font-size: clamp(1.8rem, 3vw, 2.8rem); font-weight: 800; color: #9ef9bf; letter-spacing: 0.05em; }
+    .close-btn {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      width: 38px;
+      height: 38px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--green-1);
+      font-size: 1.7rem;
+      line-height: 1;
+      cursor: pointer;
+      box-shadow: 0 12px 22px rgba(15, 95, 53, 0.12);
+      z-index: 50;
+    }
+    .theatre-wrap {
+      position: relative; width: 100%; max-width: 900px; margin: 0 auto; overflow: hidden; border-radius: 18px; box-shadow: 0 26px 48px rgba(13, 35, 23, 0.18); background: #dfeee0; min-height: 520px;
+    }
+    .video-shell { position: relative; z-index: 2; width: 100%; opacity: 1; background: #000; }
+    .video-shell video { display: block; width: 100%; max-height: 520px; background: #000; }
+    .theatre-curtain { position: absolute; top: 0; bottom: 0; width: 50%; z-index: 3; background: linear-gradient(90deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02) 18%, rgba(0,0,0,0.08) 100%), repeating-linear-gradient(90deg, var(--green-1) 0%, var(--green-2) 12%, var(--green-3) 24%, var(--green-2) 38%, var(--green-1) 52%, var(--green-2) 66%, var(--green-3) 82%, var(--green-2) 100%); box-shadow: inset 0 0 0 3px rgba(255,240,174,0.8), inset 0 0 18px rgba(0,0,0,0.32); }
+    .theatre-curtain::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, rgba(255,255,255,0.1) 0 8px, rgba(0,0,0,0.08) 8px 16px); opacity: 0.55; }
+    .theatre-curtain::after { content: ""; position: absolute; top: 0; bottom: 0; width: 18px; background: linear-gradient(180deg, #f1f4e1 0%, #d6d890 42%, #b08d2c 100%); box-shadow: 0 0 12px rgba(255, 237, 149, 0.8); }
+    .theatre-curtain.left { left: 0; transform-origin: left center; animation: curtain-left 1.4s cubic-bezier(0.23, 1, 0.32, 1) 0.2s forwards; }
+    .theatre-curtain.right { right: 0; transform-origin: right center; animation: curtain-right 1.4s cubic-bezier(0.23, 1, 0.32, 1) 0.2s forwards; }
+    .theatre-curtain.left::after { right: 8px; }
+    .theatre-curtain.right::after { left: 8px; }
+    @keyframes curtain-left { 0% { transform: translateX(0); } 100% { transform: translateX(-105%); } }
+    @keyframes curtain-right { 0% { transform: translateX(0); } 100% { transform: translateX(105%); } }
+    .controls { margin-top: 1.4rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+    .btn { display: none; }
+    .status { margin-top: 0.9rem; min-height: 24px; font-size: 0.95rem; color: #b5f9ca; font-weight: 600; }
+    .video-complete-message {
+      display: none;
+      max-width: 860px;
+      margin: 1.5rem auto 0;
+      padding: 1rem 1.4rem;
+      background: rgba(15, 55, 36, 0.9);
+      border: 1px solid rgba(108, 255, 166, 0.25);
+      border-radius: 16px;
+      box-shadow: 0 12px 28px rgba(15, 95, 53, 0.2);
+      color: #ebffef;
+      line-height: 1.8;
+      font-size: 1.05rem;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .video-complete-message .highlight-word {
+      font-weight: 800;
+      color: #b8ffd0;
+      text-shadow: 0 0 10px rgba(86, 255, 160, 0.45);
+    }
+    .video-complete-message.visible {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="surprise-page">
+    <button class="close-btn" type="button" aria-label="Close surprise" onclick="window.location.href='demo.html?skipIntro=1#video-section'">×</button>
+    <h1 class="title">Surprise 1</h1>
+    <div class="theatre-wrap" id="theatreWrap">
+      <div class="theatre-curtain left"></div>
+      <div class="theatre-curtain right"></div>
+      <div class="video-shell">
+        <video id="birthdayVideo" controls preload="metadata" playsinline autoplay>
+          <source src="Journey.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    </div>
+    <div id="video-complete-message" class="video-complete-message" aria-live="polite">
+      “ఈ వీడియో చేసిన ఫన్ కోసం కాదు. నువ్వు నిజంగా ఎంత ఇబ్బంది పడుతున్నావో నాకు తెలుసు. కానీ అయినా మోటివేట్ అయ్యి వెళ్తున్నావో కదా. నిజంగా నీకు నా హ్యాట్సాఫ్ జో”
+    </div>
+    <div class="status">Enjoy your surprise 🎉</div>
+  </div>
+
+  <script>
+    const video = document.getElementById('birthdayVideo');
+    const videoCompleteMessage = document.getElementById('video-complete-message');
+
+    function showVideoMessage() {
+      if (videoCompleteMessage) {
+        videoCompleteMessage.classList.add('visible');
+      }
+    }
+
+    function hideVideoMessage() {
+      if (videoCompleteMessage) {
+        videoCompleteMessage.classList.remove('visible');
+      }
+    }
+
+    if (video) {
+      video.addEventListener('play', hideVideoMessage);
+      video.addEventListener('ended', showVideoMessage);
+      video.addEventListener('timeupdate', () => {
+        if (video.duration && video.currentTime >= video.duration - 0.25) {
+          showVideoMessage();
+        }
+      });
+      video.play().catch(() => {});
+    }
+  </script>
+</body>
+</html>
